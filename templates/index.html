@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{.Title}}</title>
+    <link rel="stylesheet" href="static/stylesheets/style.css" />
+    <link href='http://fonts.googleapis.com/css?family=Raleway:300' rel='stylesheet' type='text/css'>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="header">
+            <h1 class="center"><a class="banner" href="/">SnapMaker</a></h1>
+        </div><!--end of header-->
+        <div class="content-style">
+            <div class="output">
+                {{if .Messages}}
+                    <h2 class="error">{{.Messages}}</h2>
+                {{end}}
+            </div><!--end of output-->
+            <form method="POST" action="/" class="form-style">
+                <div class="input-group">
+                    <label for="url">URL:</label>
+                    <input placeholder="http://wootric.com" class="form-item" name="url" type="text" />
+                </div>
+                <div class="input-group">
+                    <label for="width" >Width in pixels:</label>
+                    <input placeholder="1024" class="form-item" name="width" type="text" />
+                </div>
+                <div class="input-group">
+                    <label for="width">Height in pixels: </label>
+                    <input placeholder="768" class="form-item" name="height" type="text" />
+                </div>
+                <input class="form-item form-button" type="submit" value="Get snapshot!" />
+            </form><!--end of form-->
+        </div><!-- end of content-style-->
+        <div class="footer">
+            <span class="footer-text">Wootric Coding Challenge 2015</span>
+        </div>
+    </div><!--end of wrapper-->
+</body>
+</html>
