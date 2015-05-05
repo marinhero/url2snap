@@ -107,7 +107,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 			if urlbox.CreateShot(data) == "OK" {
 				index.S3Link = uploadToS3(data)
 			} else {
-				index.Messages = "API returned KO"
+				index.Messages = "API returned KO - Please verify your input values"
 			}
 		}
 	}
