@@ -9,7 +9,7 @@ package main
 import (
 	"testing"
 
-	"github.com/marinhero/wootricChallenge/urlbox"
+	"github.com/marinhero/url2snap/urlbox"
 )
 
 func TestUploadToS3(t *testing.T) {

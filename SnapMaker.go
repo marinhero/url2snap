@@ -18,7 +18,7 @@ import (
 	"strconv"
 	"text/template"
 
-	"github.com/marinhero/wootricChallenge/urlbox"
+	"github.com/marinhero/url2snap/urlbox"
 	"github.com/mitchellh/goamz/aws"
 	"github.com/mitchellh/goamz/s3"
 )
