@@ -7,6 +7,7 @@
 package urlbox
 
 import (
+	"os"
 	"testing"
 )
 
@@ -38,6 +39,7 @@ func TestGetScreenshot(t *testing.T) {
 				tCase.expected,
 				output)
 		}
+		os.Remove(tCase.fileName)
 	}
 }
 
@@ -118,5 +120,6 @@ func TestCreateShot(t *testing.T) {
 				tCase.expected,
 				output)
 		}
+		os.Remove(GetFileName(shotinfo))
 	}
 }
