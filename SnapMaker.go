@@ -7,23 +7,30 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
 	"regexp"
 	"strconv"
 	"text/template"
 
 	"github.com/marinhero/wootricChallenge/urlbox"
+	"github.com/mitchellh/goamz/aws"
+	"github.com/mitchellh/goamz/s3"
 )
+
+//S3 bucket name
+const BUCKETNAME = "snapshotswootric"
 
 //Page provides an endpoint of valuable information
 //needed by the fronted
 type Page struct {
 	Title    string
-	NewURL   string
+	S3Link   string
 	Messages string
 }
 
@@ -51,6 +58,38 @@ func validForm(f url.Values) (data urlbox.ShotData, strErr string) {
 	return
 }
 
+//GetFile opens the file in local disk and returns its content
+func getFile(fileName string) (bytes []byte, filetype string) {
+	file, _ := os.Open(fileName)
+	defer file.Close()
+
+	fileInfo, _ := file.Stat()
+	size := fileInfo.Size()
+	bytes = make([]byte, size)
+
+	buffer := bufio.NewReader(file)
+	buffer.Read(bytes)
+
+	filetype = http.DetectContentType(bytes)
+	return
+}
+
+//UploadToS3 sends the snapshot to S3 storage and returns a public link
+func uploadToS3(data urlbox.ShotData) (s3Link string) {
+	if data.URL != "" && data.Width > 0 && data.Height > 0 {
+		auth, _ := aws.EnvAuth()
+		client := s3.New(auth, aws.USEast)
+		demoBucket := client.Bucket(BUCKETNAME)
+
+		fileName := urlbox.GetFileName(data)
+		bytes, filetype := getFile(fileName)
+		demoBucket.Put(fileName, bytes, filetype, s3.PublicRead)
+		s3Link = demoBucket.URL(fileName)
+		os.Remove(fileName)
+	}
+	return
+}
+
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	lp := path.Join("templates", "index.html")
 	index := Page{Title: "SnapMaker - By Marin Alcaraz"}
@@ -66,7 +105,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 			index.Messages = strErr
 		} else {
 			if urlbox.CreateShot(data) == "OK" {
-				index.NewURL = "Success"
+				index.S3Link = uploadToS3(data)
 			} else {
 				index.Messages = "API returned KO"
 			}

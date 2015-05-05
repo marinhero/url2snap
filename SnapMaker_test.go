@@ -6,9 +6,13 @@
 
 package main
 
-import "testing"
+import (
+	"testing"
 
-func TestuploadToS3(t *testing.T) {
+	"github.com/marinhero/wootricChallenge/urlbox"
+)
+
+func TestUploadToS3(t *testing.T) {
 	cases := []struct {
 		url           string
 		widht, height uint
@@ -20,12 +24,14 @@ func TestuploadToS3(t *testing.T) {
 		{"wootric.com", 1024, 768,
 			"https://s3.amazonaws.com/" +
 				"snapshotswootric/wootric.com1024x768.png"},
+		{"", 0, 0, ""},
 	}
-	var shotinfo ShotData
+	var shotinfo urlbox.ShotData
 	for _, tCase := range cases {
 		shotinfo.URL = tCase.url
 		shotinfo.Width = tCase.widht
 		shotinfo.Height = tCase.height
+		urlbox.CreateShot(shotinfo)
 		output := uploadToS3(shotinfo)
 		if output != tCase.expected {
 			t.Errorf("[!CreateShot]IN: %q EXPECTED: %q GOT: %q",

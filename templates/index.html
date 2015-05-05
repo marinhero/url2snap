@@ -16,6 +16,10 @@
                 {{if .Messages}}
                     <h2 class="error">{{.Messages}}</h2>
                 {{end}}
+                {{if .S3Link}}
+                    <h2>Snapshot URL:</h2>
+                    <a href="{{.S3Link}}">{{.S3Link}}</a>
+                {{end}}
             </div><!--end of output-->
             <form method="POST" action="/" class="form-style">
                 <div class="input-group">

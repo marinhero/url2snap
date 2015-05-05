@@ -108,9 +108,9 @@ func TestCreateShot(t *testing.T) {
 	}
 	var shotinfo ShotData
 	for _, tCase := range cases {
-		shotinfo.url = tCase.url
-		shotinfo.width = tCase.widht
-		shotinfo.height = tCase.height
+		shotinfo.URL = tCase.url
+		shotinfo.Width = tCase.widht
+		shotinfo.Height = tCase.height
 		output := CreateShot(shotinfo)
 		if output != tCase.expected {
 			t.Errorf("[!CreateShot]IN: %q EXPECTED: %q GOT: %q",
