@@ -77,14 +77,21 @@ func getFile(fileName string) (bytes []byte, filetype string) {
 //UploadToS3 sends the snapshot to S3 storage and returns a public link
 func uploadToS3(data urlbox.ShotData) (s3Link string) {
 	if data.URL != "" && data.Width > 0 && data.Height > 0 {
-		auth, _ := aws.EnvAuth()
+		awsSecret := os.Getenv("SNAPMAKER_AWS_ACCESS_SECRET")
+		awsKey := os.Getenv("SNAPMAKER_AWS_ACCESS_KEY")
+
+		if awsSecret == "" || awsKey == "" {
+			log.Fatal("[!]invalid AWS credentials")
+		}
+		auth, _ := aws.GetAuth(awsKey, awsSecret)
 		client := s3.New(auth, aws.USEast)
-		demoBucket := client.Bucket(BUCKETNAME)
+
+		snapBucket := client.Bucket(BUCKETNAME)
 
 		fileName := urlbox.GetFileName(data)
 		bytes, filetype := getFile(fileName)
-		demoBucket.Put(fileName, bytes, filetype, s3.PublicRead)
-		s3Link = demoBucket.URL(fileName)
+		snapBucket.Put(fileName, bytes, filetype, s3.PublicRead)
+		s3Link = snapBucket.URL(fileName)
 		os.Remove(fileName)
 	}
 	return
@@ -107,7 +114,8 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 			if urlbox.CreateShot(data) == "OK" {
 				index.S3Link = uploadToS3(data)
 			} else {
-				index.Messages = "API returned KO - Please verify your input values"
+				index.Messages = "API returned KO - " +
+					"Please verify your input values"
 			}
 		}
 	}
@@ -120,7 +128,7 @@ func initWebServer() {
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 	http.HandleFunc("/", indexHandler)
 
-	log.Println("Listening...")
+	log.Println("Listening on :8080...")
 	http.ListenAndServe(":8080", nil)
 }
 
